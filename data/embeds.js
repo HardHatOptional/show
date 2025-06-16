@@ -9,6 +9,12 @@ const embeds = [
     width="850"
     height="450"
   ></iframe>`,
+  `<iframe
+    src="https://jactur-myspace2lawl.static.hf.space"
+    frameborder="0"
+    width="850"
+    height="450"
+  ></iframe>`,
   // Examples:
   // 'https://huggingface.co/spaces/jactur/YourSpace/embed',
   // '<iframe src="https://huggingface.co/spaces/jactur/YourSpace/embed" allow="accelerometer; gyroscope; autoplay; encrypted-media; clipboard-write; web-share; fullscreen; microphone; camera"></iframe>',
