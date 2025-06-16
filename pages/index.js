@@ -1,6 +1,36 @@
 import Head from 'next/head';
 
 export default function Home({ spaces, username }) {
+  // Handle missing username
+  if (!username) {
+    return (
+      <main>
+        <Head>
+          <title>Hugging Face Spaces Embed</title>
+        </Head>
+        <h1>Please configure the HF_USER environment variable.</h1>
+      </main>
+    );
+  }
+
+  // Handle no spaces
+  if (!spaces || spaces.length === 0) {
+    return (
+      <>
+        <Head>
+          <title>{username}'s Hugging Face Spaces</title>
+        </Head>
+        <main>
+          <h1>{username}'s Hugging Face Spaces</h1>
+          <p style={{ textAlign: 'center', marginTop: '1rem' }}>
+            No spaces found for "{username}". Check your username or try again later.
+          </p>
+        </main>
+      </>
+    );
+  }
+
+  // Render spaces grid
   return (
     <>
       <Head>
@@ -38,7 +68,8 @@ export async function getStaticProps() {
   }
 
   try {
-    const res = await fetch(`https://huggingface.co/api/spaces/${username}?limit=100`);
+    const apiUrl = `https://huggingface.co/api/spaces?author=${username}&limit=100`;
+    const res = await fetch(apiUrl);
     if (!res.ok) {
       console.error('Failed to fetch spaces:', res.statusText);
       return { props: { spaces: [], username } };
