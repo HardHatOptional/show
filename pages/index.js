@@ -1,55 +1,34 @@
 import Head from 'next/head';
+import embeds from '../data/embeds';
 
-export default function Home({ spaces, username }) {
-  // Handle missing username
-  if (!username) {
-    return (
-      <main>
-        <Head>
-          <title>Hugging Face Spaces Embed</title>
-        </Head>
-        <h1>Please configure the HF_USER environment variable.</h1>
-      </main>
-    );
-  }
-
-  // Handle no spaces
-  if (!spaces || spaces.length === 0) {
-    return (
-      <>
-        <Head>
-          <title>{username}'s Hugging Face Spaces</title>
-        </Head>
-        <main>
-          <h1>{username}'s Hugging Face Spaces</h1>
-          <p style={{ textAlign: 'center', marginTop: '1rem' }}>
-            No spaces found for "{username}". Check your username or try again later.
-          </p>
-        </main>
-      </>
-    );
-  }
-
-  // Render spaces grid
+export default function Home() {
   return (
     <>
       <Head>
-        <title>{username}'s Hugging Face Spaces</title>
-        <meta name="description" content="All Hugging Face Spaces embedded" />
+        <title>My Hugging Face Spaces</title>
+        <meta name="description" content="Embed your Hugging Face Spaces" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main>
-        <h1>{username}'s Hugging Face Spaces</h1>
+        <h1>My Hugging Face Spaces Embeds</h1>
         <div className="spaces-grid">
-          {spaces.map((s) => {
-            const parts = s.id.split('/');
-            const spaceId = parts.length > 1 ? parts[1] : parts[0];
+          {embeds.map((embed, idx) => {
+            const trimmed = embed.trim();
+            if (trimmed.startsWith('<iframe')) {
+              return (
+                <div key={idx} className="space-item" dangerouslySetInnerHTML={{ __html: embed }} />
+              );
+            }
+            let url = embed;
+            if (!url.includes('/embed')) {
+              url = url.replace(/\/+$/, '') + '/embed';
+            }
             return (
-              <div key={s.id} className="space-item">
-                <h2>{spaceId}</h2>
+              <div key={idx} className="space-item">
                 <iframe
-                  src={`https://huggingface.co/spaces/${username}/${spaceId}/embed`}
+                  src={url}
                   allow="accelerometer; gyroscope; autoplay; encrypted-media; clipboard-write; web-share; fullscreen; microphone; camera"
+                  style={{ width: '100%', height: '400px', border: 'none' }}
                 />
               </div>
             );
@@ -58,29 +37,4 @@ export default function Home({ spaces, username }) {
       </main>
     </>
   );
-}
-
-export async function getStaticProps() {
-  const username = process.env.HF_USER || '';
-  if (!username) {
-    console.error('HF_USER environment variable is not set.');
-    return { props: { spaces: [], username } };
-  }
-
-  try {
-    const apiUrl = `https://huggingface.co/api/spaces?author=${username}&limit=100`;
-    const res = await fetch(apiUrl);
-    if (!res.ok) {
-      console.error('Failed to fetch spaces:', res.statusText);
-      return { props: { spaces: [], username } };
-    }
-    const spaces = await res.json();
-    return {
-      props: { spaces, username },
-      revalidate: 60,
-    };
-  } catch (error) {
-    console.error('Error fetching spaces:', error);
-    return { props: { spaces: [], username } };
-  }
 }

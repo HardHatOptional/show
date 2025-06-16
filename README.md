@@ -1,6 +1,6 @@
  # Hugging Face Spaces Embed Site
 
- This repository is a Next.js application that automatically embeds all Hugging Face Spaces under a given user. When you deploy to Vercel, it will fetch your spaces and display them on the site. It uses Incremental Static Regeneration (ISR) to keep the site up-to-date.
+ This repository is a Next.js application that renders a collection of Hugging Face Spaces embeds. You can manually list your Space embed URLs or full `<iframe>` snippets in a simple configuration file, and the site will display them all.
 
  ## Setup
 
@@ -13,12 +13,9 @@
     ```bash
     npm install
     ```
- 3. Configure environment variables:
-    - Copy `.env.example` to `.env.local`:
-      ```bash
-      cp .env.example .env.local
-      ```
-    - Edit `.env.local` and set `HF_USER` to your Hugging Face username.
+ 3. Configure embeds:
+    - Open `data/embeds.js`.
+    - Add your embed URLs or full `<iframe>` snippets to the `embeds` array.
  4. Run locally:
     ```bash
     npm run dev
@@ -28,6 +25,18 @@
  ## Deploying to Vercel
 
  1. Push this repository to GitHub.
- 2. On Vercel dashboard, import the repo.
- 3. Set environment variable `HF_USER` in Vercel project settings.
- 4. Deploy. The site will regenerate and list your spaces.
+ 2. In the Vercel dashboard, click **New Project** and import your repo.
+ 3. Deploy. Whenever you update `data/embeds.js` and push, Vercel will rebuild with your changes.
+
+ ## Example
+
+ In `data/embeds.js`:
+```js
+const embeds = [
+  // Using embed URL:
+  'https://huggingface.co/spaces/jactur/YourSpace/embed',
+  // Full iframe snippet:
+  '<iframe src="https://huggingface.co/spaces/jactur/AnotherSpace/embed" allow="accelerometer; gyroscope; autoplay; encrypted-media; clipboard-write; web-share; fullscreen; microphone; camera"></iframe>',
+];
+export default embeds;
+```
